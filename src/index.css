@@ -1,0 +1,114 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,100..1000;1,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Lora:ital,wght@0,400..700;1,400..700&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #faf5ff;
+  --color-brand-100: #f3e8ff;
+  --color-brand-200: #e9d5ff;
+  --color-brand-300: #d8b4fe;
+  --color-brand-400: #c084fc;
+  --color-brand-500: #a855f7;
+  --color-brand-600: #9333ea;
+  --color-brand-700: #7e22ce;
+  --color-brand-800: #6b21a8;
+  --color-brand-900: #581c87;
+  --color-brand-950: #3b0764;
+
+  --color-primary: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-primary-light: #ede9fe;
+
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Lora", serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+:root {
+  --color-bg: #ffffff;
+  --color-surface: #f9f8ff;
+  --color-text-primary: #111827;
+  --color-text-secondary: #4b5563;
+  --color-border: #e5e7eb;
+}
+
+.dark {
+  --color-bg: #0f0f1a;
+  --color-surface: #1a1a2e;
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #9ca3af;
+  --color-border: #1f2937;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  img {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-brand-200);
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: var(--color-brand-800);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-300);
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: var(--color-brand-700);
+}
+
+/* Utility Classes */
+@layer utilities {
+  .bg-surface {
+    background-color: var(--color-surface);
+  }
+
+  .text-muted {
+    color: var(--color-text-secondary);
+  }
+
+  .border-theme {
+    border-color: var(--color-border);
+  }
+}
