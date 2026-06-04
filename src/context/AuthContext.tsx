@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
-import { User, Profile } from '../types';
-import { mockProfiles } from '../lib/mockdata';
+import { User, Profile } from '../types/types';
+import { mockProfiles } from '../data/mockdata';
 
 interface AuthContextType {
   user: User | null;

@@ -1,4 +1,4 @@
-import { Profile, Post, Tag } from '../types';
+import { Profile, Post, Tag } from '../types/types.ts';
 
 export const mockTags: Tag[] = [
 {
@@ -562,3 +562,5 @@ export const mockPosts: Post[] = [
   author: mockProfiles['user-1'],
   tags: [mockTags[0]]
 }];
+
+
