@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import { PenSquare, LogOut } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
 import { Button } from '../ui/Button';
-// import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
+
+
 export function Header() {
   const { user, profile, signOut } = useAuth();
   return (

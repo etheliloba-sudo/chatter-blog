@@ -1,15 +1,51 @@
-function App() {
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import { Layout } from './components/layout/Layout';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { HomePage } from './pages/HomePage';
+import { LoginPage } from './pages/auth/LoginPage';
+import { SignupPage } from './pages/auth/SignupPage';
+import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
+// import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
+// import { ProfilePage } from './pages/ProfilePage';
+// import { TagPage } from './pages/TagPage';
+// import { NotFoundPage } from './pages/NotFoundPage';
+// import { EditorPage } from './pages/EditorPage';
+// import { DashboardPage } from './pages/DashboardPage';
+// import { SettingsPage } from './pages/SettingsPage';
+// import { PostPage } from './pages/PostPage';
+
+export function App() {
   return (
-    <main>
-      <h1>Chatter</h1>
-    </main>
-  );
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="login" element={<LoginPage />} />
+              <Route path="signup" element={<SignupPage />} />
+              <Route path="reset-password" element={<ResetPasswordPage />} />
+              {/* <Route path="auth/callback" element={<AuthCallbackPage />} />
+              <Route path="tags/:slug" element={<TagPage />} />
+              <Route path="@:username" element={<ProfilePage />} />
+              <Route path="@:username/:slug" element={<PostPage />} /> */}
+
+              <Route element={<ProtectedRoute />}>
+                <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="write" element={<EditorPage />} />
+                <Route path="edit/:postId" element={<EditorPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+              </Route>
+
+              {/* <Route path="404" element={<NotFoundPage />} />
+              <Route path="*" element={<NotFoundPage />} /> */}
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>);
+
 }
- 
-export default App;
-
-
-
-
-
-

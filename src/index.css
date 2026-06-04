@@ -71,7 +71,6 @@
   }
 }
 
-/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -98,7 +97,7 @@
   background: var(--color-brand-700);
 }
 
-/* Utility Classes */
+
 @layer utilities {
   .bg-surface {
     background-color: var(--color-surface);
