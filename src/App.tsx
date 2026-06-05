@@ -13,7 +13,7 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 // import { TagPage } from './pages/TagPage';
 // import { NotFoundPage } from './pages/NotFoundPage';
 // import { EditorPage } from './pages/EditorPage';
-// import { DashboardPage } from './pages/DashboardPage';
+import { DashboardPage } from './pages/DashboardPage';
 // import { SettingsPage } from './pages/SettingsPage';
 // import { PostPage } from './pages/PostPage';
 
@@ -27,7 +27,10 @@ export default function App() {
               <Route index element={<HomePage />} />
               <Route path="login" element={<LoginPage />} />
               <Route path="signup" element={<SignupPage />} />
-              <Route path="reset-password" element={<ResetPasswordPage />}/>
+              <Route path="reset-password" element={<ResetPasswordPage />} />
+            </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="dashboard" element={<DashboardPage />} />
             </Route>
           </Routes>
         </BrowserRouter>
