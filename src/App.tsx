@@ -9,7 +9,7 @@ import { LoginPage } from './pages/auth/LoginPage';
 import { SignupPage } from './pages/auth/SignupPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 // import { AuthCallbackPage } from './pages/auth/AuthCallbackPage';
-// import { ProfilePage } from './pages/ProfilePage';
+import { ProfilePage } from './pages/ProfilePage';
 // import { TagPage } from './pages/TagPage';
 // import { NotFoundPage } from './pages/NotFoundPage';
 // import { EditorPage } from './pages/EditorPage';
@@ -25,12 +25,13 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<HomePage />} />
-              <Route path="login" element={<LoginPage />} />
-              <Route path="signup" element={<SignupPage />} />
-              <Route path="reset-password" element={<ResetPasswordPage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              <Route path="/:username" element={<ProfilePage />} />
             </Route>
             <Route element={<ProtectedRoute />}>
-              <Route path="dashboard" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
             </Route>
           </Routes>
         </BrowserRouter>

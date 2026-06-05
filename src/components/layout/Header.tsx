@@ -51,7 +51,7 @@ export function Header() {
                 </Button>
               </Link>
               <div className="h-8 w-px bg-[var(--color-border)] mx-2 hidden sm:block" />
-              <Link to={`/@${profile?.username}`}>
+              <Link to={`/${profile?.username}`}>
                 <img
                 src={profile?.avatar_url || ''}
                 alt={profile?.display_name}
