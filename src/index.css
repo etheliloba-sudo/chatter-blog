@@ -19,25 +19,33 @@
   --color-primary-hover: #6d28d9;
   --color-primary-light: #ede9fe;
 
+  /* --color-surface-light: #ffffff;
+  --color-surface-dark: #0f0f1a;
+  --color-surface-card-light: #f9f8ff;
+  --color-surface-card-dark: #1a1a2e; */
+
   --font-sans: "DM Sans", sans-serif;
   --font-serif: "Lora", serif;
   --font-mono: "JetBrains Mono", monospace;
+
 }
 
 :root {
   --color-bg: #ffffff;
-  --color-surface: #f9f8ff;
+  --color-surface-light: #ffffff;
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
   --color-border: #e5e7eb;
+  --color-surface-card-light: #f9f8ff
 }
 
 .dark {
   --color-bg: #0f0f1a;
-  --color-surface: #1a1a2e;
+  --color-surface-dark: #0f0f1a;
   --color-text-primary: #f9fafb;
   --color-text-secondary: #9ca3af;
   --color-border: #1f2937;
+  --color-surface-card-dark: #1a1a2e;
 }
 
 @layer base {

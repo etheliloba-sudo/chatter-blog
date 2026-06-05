@@ -11,12 +11,12 @@ interface PostCardProps {
   showAuthor?: boolean;
 }
 export function PostCard({ post, showAuthor = true }: PostCardProps) {
-  const postUrl = `/@${post.author?.username}/${post.slug}`;
+  const postUrl = `/${post.author?.username}/${post.slug}`;
   return (
     <article className="group flex flex-col gap-4 rounded-2xl p-4 transition-all hover:bg-[var(--color-surface)] hover:shadow-sm border border-transparent hover:border-[var(--color-border)]">
       {showAuthor && post.author &&
       <div className="flex items-center gap-3">
-          <Link to={`/@${post.author.username}`}>
+          <Link to={`/${post.author.username}`}>
             <img
             src={post.author.avatar_url || ''}
             alt={post.author.display_name}

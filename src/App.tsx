@@ -14,6 +14,7 @@ import { ProfilePage } from './pages/ProfilePage';
 // import { NotFoundPage } from './pages/NotFoundPage';
 // import { EditorPage } from './pages/EditorPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { ProfileStoriesPage } from './pages/ProfileStoriesPage'
 // import { SettingsPage } from './pages/SettingsPage';
 // import { PostPage } from './pages/PostPage';
 
@@ -29,9 +30,15 @@ export default function App() {
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/:username" element={<ProfilePage />} />
-            </Route>
-            <Route element={<ProtectedRoute />}>
-              <Route path="/dashboard" element={<DashboardPage />} />
+
+              <Route
+                path="/:username/stories"
+                element={<ProfileStoriesPage />}
+              />
+
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+              </Route>
             </Route>
           </Routes>
         </BrowserRouter>
