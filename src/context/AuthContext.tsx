@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext, useContext } from 'react';
-import { User, Profile } from '../types/types';
+import type { User, Profile } from '../types';
 import { mockProfiles } from '../data/mockdata';
 
 interface AuthContextType {

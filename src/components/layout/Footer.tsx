@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Github, Twitter, Linkedin } from 'lucide-react';
+import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 
 export function Footer() {
   return (
@@ -39,13 +39,13 @@ export function Footer() {
 
         <div className="flex gap-4 text-[var(--color-text-secondary)]">
           <a href="#" className="hover:text-primary transition-colors">
-            <Twitter className="h-5 w-5" />
+            <TwitterLogoIcon className="h-5 w-5" />
           </a>
           <a href="#" className="hover:text-primary transition-colors">
-            <Github className="h-5 w-5" />
+            <GitHubLogoIcon className="h-5 w-5" />
           </a>
           <a href="#" className="hover:text-primary transition-colors">
-            <Linkedin className="h-5 w-5" />
+            <LinkedInLogoIcon className="h-5 w-5" />
           </a>
         </div>
       </div>
