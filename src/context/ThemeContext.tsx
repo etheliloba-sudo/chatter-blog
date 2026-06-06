@@ -7,23 +7,16 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export function ThemeProvider({ children }: {children: React.ReactNode;}) {
   const [theme, setTheme] = useState<Theme>(() => {
-    const saved = localStorage.getItem('chatter-theme');
-    if (saved === 'light' || saved === 'dark') return saved;
-    if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches)
-    {
-      return 'dark';
-    }
-    return 'light';
+    const stored = localStorage.getItem('chatter-theme');
+    if (stored === 'light' || stored === 'dark') return stored;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ?
+    'dark' :
+    'light';
   });
   useEffect(() => {
-    const root = document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
     localStorage.setItem('chatter-theme', theme);
   }, [theme]);
   const toggleTheme = () => {

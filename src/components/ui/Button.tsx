@@ -1,18 +1,11 @@
 import React, { forwardRef } from 'react';
-import { clsx, type ClassValue } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import { cn } from '../../lib/utils';
 import { Loader2 } from 'lucide-react';
-function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
-
-export interface ButtonProps extends
-  React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   isLoading?: boolean;
 }
-
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
   {
@@ -29,10 +22,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     const variants = {
       primary: 'bg-primary text-white hover:bg-primary-hover shadow-sm',
       secondary:
-      'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 dark:bg-surface-card-dark dark:text-gray-100 dark:border-gray-700 dark:hover:bg-gray-800',
+      'bg-brand-100 text-brand-900 hover:bg-brand-200 dark:bg-brand-900/30 dark:text-brand-100 dark:hover:bg-brand-900/50',
       ghost:
-      'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
-      danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm'
+      'bg-transparent text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800',
+      danger: 'bg-red-600 text-white hover:bg-red-700 shadow-sm',
+      outline:
+      'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800'
     };
     const sizes = {
       sm: 'h-8 px-3 text-sm',
@@ -44,7 +39,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={disabled || isLoading}
         className={cn(
-          'inline-flex items-center justify-center rounded-full font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none dark:focus-visible:ring-offset-surface-dark',
+          'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-dark disabled:opacity-50 disabled:pointer-events-none',
           variants[variant],
           sizes[size],
           className
