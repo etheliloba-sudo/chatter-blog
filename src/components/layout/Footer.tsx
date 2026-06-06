@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from '@radix-ui/react-icons';
 
@@ -18,22 +17,22 @@ export function Footer() {
 
         <div className="flex gap-6 text-sm font-medium text-[var(--color-text-secondary)]">
           <Link
-            to="/about"
+            to="/search"
             className="hover:text-[var(--color-text-primary)] transition-colors">
             
-            About
+            Explore
           </Link>
           <Link
-            to="/privacy"
+            to="/tags"
             className="hover:text-[var(--color-text-primary)] transition-colors">
             
-            Privacy
+            Tags
           </Link>
           <Link
-            to="/terms"
+            to="/"
             className="hover:text-[var(--color-text-primary)] transition-colors">
             
-            Terms
+            Home
           </Link>
         </div>
 

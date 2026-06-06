@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-    MapPin,
     Link as LinkIcon,
     Calendar
 } from 'lucide-react';
@@ -10,8 +9,8 @@ import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/ui/Avatar';
 import { PostCard } from '../components/post/PostCard';
 import { useAuth } from '../context/AuthContext';
-// import { Post } from '../types';
-import { mockProfiles, mockPosts } from '../data/mockdata'
+import type { Post, Profile } from '../types';
+import { getProfileByUsername, getPublishedPostsByAuthor } from '../lib/content';
 
 
 export function ProfilePage() {
@@ -19,28 +18,68 @@ export function ProfilePage() {
     const { profile: currentUser } = useAuth();
     const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
     const [isFollowing, setIsFollowing] = useState(false);
-    const isOwnProfile = currentUser?.username === username;
-    const profile = isOwnProfile ?
-        currentUser :
-        {
-            id: '2',
-            username: username || 'user',
-            display_name: 'Alex Developer',
-            avatar_url: `https://i.pravatar.cc/150?u=${username}`,
-            bio: 'Software engineer and writer. Passionate about web technologies, UI design, and building great user experiences.',
-            website_url: 'https://example.com',
-            twitter_url: 'https://twitter.com',
-            github_url: 'https://github.com',
-            linkedin_url: null,
-            follower_count: 1240,
-            following_count: 85,
-            post_count: 12,
-            created_at: '2025-01-01T00:00:00Z'
+    const [profile, setProfile] = useState<Profile | null>(null);
+    const [posts, setPosts] = useState<Post[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!username) {
+            return;
+        }
+
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+
+            try {
+                const profileData = await getProfileByUsername(username);
+
+                if (!profileData) {
+                    setProfile(null);
+                    setPosts([]);
+                    return;
+                }
+
+                setProfile(profileData);
+                setPosts(await getPublishedPostsByAuthor(profileData.id));
+            } catch {
+                setError('Unable to load this profile right now.');
+            } finally {
+                setLoading(false);
+            }
         };
-    const posts = mockPosts.map((p) => ({
-        ...p,
-        author: profile
-    }));
+
+        void load();
+    }, [username]);
+
+    const isOwnProfile = currentUser?.id === profile?.id;
+
+    if (loading) {
+        return (
+            <div className="mx-auto max-w-4xl rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-10 text-center text-[var(--color-text-secondary)]">
+                Loading profile...
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="mx-auto max-w-4xl rounded-xl border border-red-300 bg-red-50 p-6 text-center text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+                {error}
+            </div>
+        );
+    }
+
+    if (!profile) {
+        return (
+            <div className="mx-auto max-w-4xl rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-10 text-center">
+                <h1 className="font-serif text-3xl font-bold text-[var(--color-text-primary)]">Profile not found</h1>
+                <p className="mt-2 text-sm text-[var(--color-text-secondary)]">This user does not exist or has not finished setting up their profile.</p>
+            </div>
+        );
+    }
+
     return (
         <div className="max-w-4xl mx-auto">
             <div className="mb-12">
@@ -148,6 +187,12 @@ export function ProfilePage() {
                 <div className="space-y-6">
                     {posts.map((post) =>
                         <PostCard key={post.id} post={post} showAuthor={false} />
+                    )}
+
+                    {posts.length === 0 && (
+                        <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center text-[var(--color-text-secondary)]">
+                            No published stories yet.
+                        </div>
                     )}
                 </div> :
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
@@ -18,13 +17,8 @@ import { TagDetailPage } from './pages/TagDetailPage';
 import { ProfileStoriesPage } from './pages/ProfileStoriesPage';
 import { StatsPage } from './pages/StatsPage';
 import { BookmarksPage } from './pages/BookmarksPage';
+import { SettingsPage } from './pages/SettingsPage';
 
-const Placeholder = ({ title }: { title: string }) => (
-  <div className="py-20 text-center">
-    <h1 className="text-3xl font-bold mb-4">{title}</h1>
-    <p className="text-gray-500">This page is under construction.</p>
-  </div>
-)
 export default function App() {
   return (
     <ThemeProvider>
@@ -40,12 +34,12 @@ export default function App() {
               <Route path="/tags" element={<TagsPage />} />
               <Route path="/tag/:tag" element={<TagDetailPage />} />
 
-              <Route path="/:username" element={<ProfilePage />} />
+              <Route path="/@:username" element={<ProfilePage />} />
               <Route
-                path="/:username/stories"
+                path="/@:username/stories"
                 element={<ProfileStoriesPage />}
               />
-              <Route path="/:username/:slug" element={<PostPage />} />
+              <Route path="/@:username/:slug" element={<PostPage />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<DashboardPage />} />
@@ -53,10 +47,7 @@ export default function App() {
                 <Route path="/bookmarks" element={<BookmarksPage />} />
                 <Route path="/write" element={<EditorPage />} />
                 <Route path="/edit/:postId" element={<EditorPage />} />
-                <Route
-                  path="/settings"
-                  element={<Placeholder title="Settings" />}
-                />
+                <Route path="/settings" element={<SettingsPage />} />
               </Route>
             </Route>
           </Routes>

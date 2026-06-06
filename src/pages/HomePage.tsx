@@ -1,13 +1,43 @@
-import {useState, React} from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Clock, Sparkles, ChevronDown } from 'lucide-react';
+import { TrendingUp, Clock, ChevronDown } from 'lucide-react';
 import { PostCard } from '../components/post/PostCard';
 import { mockPosts, mockTags } from '../data/mockdata';
+import type { Post, Tag } from '../types';
+import { getPublishedPosts, getTrendingTags } from '../lib/content';
 
 
 export function HomePage() {
+  const [activeTab, setActiveTab] = useState<'for-you' | 'following'>('for-you');
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [isActive, setIsActive] = useState();
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [postsData, tagsData] = await Promise.all([
+          getPublishedPosts(20),
+          getTrendingTags(12)
+        ]);
+
+        setPosts(postsData);
+        setTags(tagsData);
+      } catch {
+        setError('Unable to load live content. Showing sample data for now.');
+        setPosts(mockPosts);
+        setTags(mockTags.slice(0, 12));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void load();
+  }, []);
 
   return (
     <div className="flex flex-col lg:flex-row gap-12">
@@ -15,19 +45,39 @@ export function HomePage() {
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-4">
           <h1 className="text-2xl font-bold font-serif">Your Feed</h1>
           <div className="flex gap-4 text-sm">
-            <button className="flex items-center gap-1 font-medium text-brand-600 dark:text-brand-400 border-b-2 border-brand-600 dark:border-brand-400 pb-4 -mb-[17px]">
+            <button
+              onClick={() => setActiveTab('for-you')}
+              className={`flex items-center gap-1 border-b-2 pb-4 -mb-[17px] font-medium ${activeTab === 'for-you' ? 'text-brand-600 border-brand-600 dark:text-brand-400 dark:border-brand-400' : 'text-gray-500 border-transparent hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}`}>
               <ChevronDown className="h-4 w-4" /> For You
             </button>
-            <button className="flex items-center gap-1 font-medium text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 pb-4 -mb-[17px]">
+            <button
+              onClick={() => setActiveTab('following')}
+              className={`flex items-center gap-1 border-b-2 pb-4 -mb-[17px] font-medium ${activeTab === 'following' ? 'text-brand-600 border-brand-600 dark:text-brand-400 dark:border-brand-400' : 'text-gray-500 border-transparent hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'}`}>
               <Clock className="h-4 w-4" /> Following
             </button>
           </div>
         </div>
 
         <div className="space-y-6">
-          {mockPosts.map((post) =>
-          <PostCard key={post.id} post={post} />
+          {loading && (
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center text-[var(--color-text-secondary)]">
+              Loading stories...
+            </div>
           )}
+
+          {!loading && error && (
+            <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
+              {error}
+            </div>
+          )}
+
+          {!loading && posts.length === 0 && (
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center text-[var(--color-text-secondary)]">
+              No posts yet. Be the first to write on Chatter.
+            </div>
+          )}
+
+          {!loading && posts.map((post) => <PostCard key={post.id} post={post} />)}
         </div>
       </div>
 
@@ -53,7 +103,7 @@ export function HomePage() {
             <TrendingUp className="h-5 w-5 text-brand-500" /> Trending Tags
           </h3>
           <div className="flex flex-wrap gap-2">
-            {mockTags.map((tag) =>
+            {tags.map((tag) =>
             <Link
               key={tag.id}
               to={`/tag/${tag.slug}`}

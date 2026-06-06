@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { PenSquare, LogOut } from 'lucide-react';
 import { ThemeToggle } from '../ui/ThemeToggle';
@@ -25,7 +24,7 @@ export function Header() {
               Home
             </Link>
             <Link
-              to="/explore"
+              to="/search"
               className="hover:text-[var(--color-text-primary)] transition-colors">
               
               Explore
@@ -51,10 +50,10 @@ export function Header() {
                 </Button>
               </Link>
               <div className="h-8 w-px bg-[var(--color-border)] mx-2 hidden sm:block" />
-              <Link to={`/${profile?.username}`}>
+              <Link to={profile?.username ? `/@${profile.username}` : '/dashboard'}>
                 <img
-                src={profile?.avatar_url || ''}
-                alt={profile?.display_name}
+                src={profile?.avatar_url || `https://ui-avatars.com/api/?background=7c3aed&color=fff&name=${encodeURIComponent(profile?.display_name || 'User')}`}
+                alt={profile?.display_name || 'User profile'}
                 className="h-8 w-8 rounded-full object-cover ring-2 ring-transparent hover:ring-primary transition-all" />
               
               </Link>

@@ -1,12 +1,14 @@
-import React from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from '../ui/Avatar';
-import { Button } from '../ui/Button';
 import { Profile } from '../../types';
+import { FollowAuthorButton } from './FollowAuthorButton';
 interface PostAuthorCardProps {
   author: Profile;
 }
 export function PostAuthorCard({ author }: PostAuthorCardProps) {
+  const [followerCount, setFollowerCount] = useState(author.follower_count);
+
   return (
     <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
       <div className="bg-gray-50 dark:bg-surface-card-dark rounded-2xl p-6 sm:p-8">
@@ -28,11 +30,19 @@ export function PostAuthorCard({ author }: PostAuthorCardProps) {
                   </Link>
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {author.follower_count.toLocaleString()} followers
+                  {followerCount.toLocaleString()} followers
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <Button variant="primary">Follow</Button>
+                <FollowAuthorButton
+                  authorId={author.id}
+                  authorName={author.display_name}
+                  onFollowChange={(isFollowing) => {
+                    setFollowerCount((current) =>
+                      isFollowing ? current + 1 : Math.max(0, current - 1)
+                    );
+                  }}
+                />
               </div>
             </div>
             <p className="text-gray-700 dark:text-gray-300">

@@ -1,9 +1,8 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar } from '../ui/Avatar';
-import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { Post } from '../../types';
+import { FollowAuthorButton } from './FollowAuthorButton';
 interface PostHeaderProps {
   post: Post;
 }
@@ -54,13 +53,14 @@ export function PostHeader({ post }: PostHeaderProps) {
                 
                 {post.author?.display_name}
               </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 px-2 text-xs text-brand-600 dark:text-brand-400">
-                
-                Follow
-              </Button>
+              {post.author && (
+                <FollowAuthorButton
+                  authorId={post.author.id}
+                  authorName={post.author.display_name}
+                  variant="ghost"
+                  size="sm"
+                />
+              )}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
               <span>{publishDate}</span>

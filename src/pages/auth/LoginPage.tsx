@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { AuthForm } from '../../components/auth/AuthForm';
 import { OAuthButtons } from '../../components/auth/OAuthButtons';
@@ -18,6 +17,12 @@ export function LoginPage() {
         </div>
 
         <AuthForm mode="login" />
+
+        <div className="text-right text-sm">
+          <Link to="/reset-password" className="font-medium text-primary hover:underline">
+            Forgot password?
+          </Link>
+        </div>
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

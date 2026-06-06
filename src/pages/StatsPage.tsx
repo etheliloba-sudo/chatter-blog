@@ -1,7 +1,6 @@
 import React from 'react';
 import { BarChart3, TrendingUp, Users, FileText, Heart } from 'lucide-react';
 export function StatsPage() {
-  // Mock data for the table
   const topPosts = [
   {
     id: '1',
@@ -41,8 +40,6 @@ export function StatsPage() {
           <option>All time</option>
         </select>
       </div>
-
-      {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 p-6 rounded-xl">
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm font-medium mb-3">
@@ -100,15 +97,12 @@ export function StatsPage() {
           </div>
         </div>
       </div>
-
-      {/* Chart Placeholder */}
       <div className="bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-xl p-6">
         <h3 className="font-bold text-gray-900 dark:text-white mb-6">
           Views over time
         </h3>
 
         <div className="h-64 flex items-end justify-between gap-2 pt-4">
-          {/* Mock bar chart */}
           {Array.from({
             length: 30
           }).map((_, i) => {
@@ -125,7 +119,6 @@ export function StatsPage() {
           })}
         </div>
       </div>
-      {/* Top Posts Table */}
       <div className="bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden">
         <div className="p-6 border-b border-gray-200 dark:border-gray-800">
           <h3 className="font-bold text-gray-900 dark:text-white">

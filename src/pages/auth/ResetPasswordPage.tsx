@@ -1,18 +1,30 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/ui/Button';
+import { useAuth } from '../../context/AuthContext';
 
 
 export function ResetPasswordPage() {
+  const { resetPassword } = useAuth();
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const handleSubmit = (e: React.FormEvent) => {
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    setError(null);
+
+    try {
+      await resetPassword(email);
       setSubmitted(true);
-    }, 1000);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unable to send reset email';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
@@ -37,6 +49,8 @@ export function ResetPasswordPage() {
               <input
               type="email"
               required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
               className="h-10 rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] px-3 text-[var(--color-text-primary)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
               placeholder="you@example.com" />
             
@@ -44,6 +58,12 @@ export function ResetPasswordPage() {
             <Button type="submit" className="mt-2 w-full" isLoading={loading}>
               Send Reset Link
             </Button>
+
+            {error && (
+              <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+                {error}
+              </p>
+            )}
           </form> :
 
         <div className="text-center">

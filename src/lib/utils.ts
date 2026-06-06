@@ -104,7 +104,7 @@ export function renderMarkdown(content: string): string {
   const cleanHtml = DOMPurify.sanitize(rawHtml, DOMPURIFY_CONFIG);
   const processedHtml = cleanHtml.replace(
     /<a\s+(?:[^>]*?\s+)?href=(["'])(http[s]?:\/\/[^"']+)\1([^>]*)>/gi,
-    (match, quote, url, rest) => {
+    (match, _quote, url, rest) => {
       if (url.includes('chatter.app') || url.startsWith('/')) {
         return match;
       }

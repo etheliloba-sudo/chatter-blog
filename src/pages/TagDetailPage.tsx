@@ -1,96 +1,51 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Hash } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { PostCard } from '../components/post/PostCard';
+import type { Post, Tag } from '../types';
+import { getPostsByTagSlug, getTagBySlug } from '../lib/content';
+
 export function TagDetailPage() {
   const { tag } = useParams();
   const [activeTab, setActiveTab] = useState<'latest' | 'top'>('latest');
   const [isFollowing, setIsFollowing] = useState(false);
-  // Mock data based on the route param
-  const tagName = tag ? tag.charAt(0).toUpperCase() + tag.slice(1) : 'Tag';
-  const MOCK_POSTS = [
-  {
-    id: '1',
-    author_id: '1',
-    title: `The Future of ${tagName} in 2026`,
-    slug: `future-of-${tag}-2026`,
-    excerpt: `Exploring the latest trends in ${tagName} and how it's reshaping the industry.`,
-    content: '...',
-    cover_image_url:
-    'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=800&q=80',
-    status: 'published' as const,
-    reading_time_minutes: 5,
-    view_count: 1205,
-    like_count: 342,
-    comment_count: 28,
-    published_at: '2026-05-15T10:00:00Z',
-    created_at: '2026-05-10T10:00:00Z',
-    author: {
-      id: '1',
-      username: 'alexdev',
-      display_name: 'Alex Developer',
-      avatar_url: 'https://i.pravatar.cc/150?u=alex',
-      bio: '',
-      website_url: null,
-      twitter_url: null,
-      github_url: null,
-      linkedin_url: null,
-      follower_count: 0,
-      following_count: 0,
-      post_count: 0,
-      created_at: ''
-    },
-    tags: [
-    {
-      id: '1',
-      name: tagName,
-      slug: tag || ''
-    }]
+  const [tagDetails, setTagDetails] = useState<Tag | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  },
-  {
-    id: '2',
-    author_id: '2',
-    title: `Advanced ${tagName} Patterns You Should Know`,
-    slug: `advanced-${tag}-patterns`,
-    excerpt: `Take your ${tagName} skills to the next level with these advanced techniques and patterns.`,
-    content: '...',
-    cover_image_url: null,
-    status: 'published' as const,
-    reading_time_minutes: 8,
-    view_count: 8500,
-    like_count: 1240,
-    comment_count: 156,
-    published_at: '2026-05-14T10:00:00Z',
-    created_at: '2026-05-14T10:00:00Z',
-    author: {
-      id: '2',
-      username: 'sarahcodes',
-      display_name: 'Sarah Jenkins',
-      avatar_url: 'https://i.pravatar.cc/150?u=sarah',
-      bio: '',
-      website_url: null,
-      twitter_url: null,
-      github_url: null,
-      linkedin_url: null,
-      follower_count: 0,
-      following_count: 0,
-      post_count: 0,
-      created_at: ''
-    },
-    tags: [
-    {
-      id: '1',
-      name: tagName,
-      slug: tag || ''
-    }]
+  useEffect(() => {
+    if (!tag) {
+      return;
+    }
 
-  }];
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const [tagRow, postsRows] = await Promise.all([
+          getTagBySlug(tag),
+          getPostsByTagSlug(tag, activeTab)
+        ]);
+
+        setTagDetails(tagRow);
+        setPosts(postsRows);
+      } catch {
+        setError('Unable to load this tag right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void load();
+  }, [activeTab, tag]);
+
+  const tagName = tagDetails?.name ?? (tag ? tag.charAt(0).toUpperCase() + tag.slice(1) : 'Tag');
 
   return (
     <div className="max-w-4xl mx-auto">
-      {/* Tag Header */}
       <div className="bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-2xl p-8 mb-12 text-center flex flex-col items-center">
         <div className="w-16 h-16 rounded-2xl bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6">
           <Hash className="h-8 w-8" />
@@ -99,20 +54,20 @@ export function TagDetailPage() {
           {tagName}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mb-8">
-          Stories, tutorials, and discussions about {tagName}. Follow this tag
-          to see more stories like this in your feed.
+          {tagDetails?.description ||
+            `Stories, tutorials, and discussions about ${tagName}.`}
         </p>
         <div className="flex items-center gap-6 mb-8 text-sm text-gray-500">
           <div className="flex flex-col">
             <span className="font-bold text-gray-900 dark:text-white text-lg">
-              1,240
+              {tagDetails?.post_count ?? posts.length}
             </span>
             <span>Stories</span>
           </div>
           <div className="w-px h-8 bg-gray-200 dark:bg-gray-800" />
           <div className="flex flex-col">
             <span className="font-bold text-gray-900 dark:text-white text-lg">
-              4,500
+              --
             </span>
             <span>Followers</span>
           </div>
@@ -127,7 +82,6 @@ export function TagDetailPage() {
         </Button>
       </div>
 
-      {/* Feed */}
       <div className="space-y-8">
         <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-800 pb-4">
           <h2 className="text-2xl font-bold font-serif">Stories</h2>
@@ -148,9 +102,25 @@ export function TagDetailPage() {
         </div>
 
         <div className="space-y-6">
-          {MOCK_POSTS.map((post) =>
-          <PostCard key={post.id} post={post} />
+          {loading && (
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center text-[var(--color-text-secondary)]">
+              Loading stories...
+            </div>
           )}
+
+          {!loading && error && (
+            <div className="rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+              {error}
+            </div>
+          )}
+
+          {!loading && !error && posts.length === 0 && (
+            <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center text-[var(--color-text-secondary)]">
+              No stories published for this tag yet.
+            </div>
+          )}
+
+          {!loading && posts.map((post) => <PostCard key={post.id} post={post} />)}
         </div>
       </div>
     </div>);

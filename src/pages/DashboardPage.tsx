@@ -6,8 +6,7 @@ import {
   FileText,
   Settings,
   Edit3,
-  Trash2,
-  Eye } from
+  Trash2 } from
 'lucide-react';
 import { Badge } from '../components/ui/Badge';
 export function DashboardPage() {

@@ -1,68 +1,18 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Avatar } from '../ui/Avatar';
 import { Button } from '../ui/Button';
 import { Heart, MessageCircle, MoreHorizontal } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-
-interface Comment {
-  id: string;
-  author: {
-    username: string;
-    display_name: string;
-    avatar_url: string | null;
-  };
-  content: string;
-  created_at: string;
-  like_count: number;
-  replies?: Comment[];
-}
-
-const MOCK_COMMENTS: Comment[] = [
-{
-  id: 'c1',
-  author: {
-    username: 'johndoe',
-    display_name: 'John Doe',
-    avatar_url: 'https://i.pravatar.cc/150?u=johndoe'
-  },
-  content:
-  'This is an incredibly insightful post! I completely agree with your points on the future of frontend development. The shift towards more robust tooling is undeniable.',
-  created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-  like_count: 12,
-  replies: [
-  {
-    id: 'c1-1',
-    author: {
-      username: 'sarahcodes',
-      display_name: 'Sarah Jenkins',
-      avatar_url: 'https://i.pravatar.cc/150?u=sarah'
-    },
-    content: 'Exactly! The ecosystem is maturing so fast.',
-    created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    like_count: 3
-  }]
-
-},
-{
-  id: 'c2',
-  author: {
-    username: 'devguy',
-    display_name: 'Dev Guy',
-    avatar_url: 'https://i.pravatar.cc/150?u=devguy'
-  },
-  content:
-  'I think WebAssembly will take longer to become mainstream for UI development, but the potential is definitely there.',
-  created_at: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
-  like_count: 5
-}];
+import type { PostComment } from '../../types';
+import { createComment, getCommentsForPost } from '../../lib/engagement';
 
 function CommentItem({
   comment,
   depth = 0
 
 
-
-}: {comment: Comment;depth?: number;}) {
+}: {comment: PostComment;depth?: number;}) {
   const [liked, setLiked] = useState(false);
   
   return (
@@ -119,27 +69,55 @@ function CommentItem({
     </div>);
 
 }
-export function CommentList() {
+export function CommentList({ postId }: { postId: string }) {
   const { user, profile } = useAuth();
-  const [comments, setComments] = useState<Comment[]>(MOCK_COMMENTS);
+  const [comments, setComments] = useState<PostComment[]>([]);
   const [newComment, setNewComment] = useState('');
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        setComments(await getCommentsForPost(postId));
+      } catch {
+        setError('Unable to load responses right now.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void load();
+  }, [postId]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !profile) return;
-    const comment: Comment = {
-      id: `c${Date.now()}`,
-      author: {
-        username: profile.username,
-        display_name: profile.display_name,
-        avatar_url: profile.avatar_url
-      },
-      content: newComment,
-      created_at: new Date().toISOString(),
-      like_count: 0
-    };
-    setComments([comment, ...comments]);
-    setNewComment('');
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const comment = await createComment({
+        postId,
+        authorId: user!.id,
+        content: newComment.trim(),
+        profile
+      });
+
+      setComments((current) => [comment, ...current]);
+      setNewComment('');
+    } catch {
+      setError('Unable to publish your response right now.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
   return (
     <div
       className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800"
@@ -148,9 +126,15 @@ export function CommentList() {
       <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
         Responses (
         {comments.length +
-        comments.reduce((acc, c) => acc + (c.replies?.length || 0), 0)}
+        comments.reduce((acc: number, comment: PostComment) => acc + (comment.replies?.length || 0), 0)}
         )
       </h3>
+
+      {error && (
+        <div className="mb-6 rounded-xl border border-red-300 bg-red-50 p-4 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+          {error}
+        </div>
+      )}
 
       {user ?
       <form
@@ -171,7 +155,7 @@ export function CommentList() {
               className="w-full bg-transparent resize-none outline-none text-gray-900 dark:text-white placeholder-gray-500 min-h-[80px]" />
             
               <div className="flex justify-end">
-                <Button type="submit" size="sm" disabled={!newComment.trim()}>
+                <Button type="submit" size="sm" isLoading={submitting} disabled={!newComment.trim()}>
                   Respond
                 </Button>
               </div>
@@ -183,13 +167,25 @@ export function CommentList() {
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Sign in to join the conversation.
           </p>
-          <Button variant="outline">Sign In</Button>
+          <Link to="/login">
+            <Button variant="outline">Sign In</Button>
+          </Link>
         </div>
       }
 
       <div className="space-y-2">
-        {comments.map((comment) =>
+        {loading && (
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-sm text-[var(--color-text-secondary)]">
+            Loading responses...
+          </div>
+        )}
+        {!loading && comments.map((comment) =>
         <CommentItem key={comment.id} comment={comment} />
+        )}
+        {!loading && comments.length === 0 && (
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-sm text-[var(--color-text-secondary)]">
+            No responses yet. Start the conversation.
+          </div>
         )}
       </div>
     </div>);

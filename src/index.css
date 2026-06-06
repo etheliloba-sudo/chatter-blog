@@ -32,6 +32,7 @@
 
 :root {
   --color-bg: #ffffff;
+  --color-surface: #ffffff;
   --color-surface-light: #ffffff;
   --color-text-primary: #111827;
   --color-text-secondary: #4b5563;
@@ -41,6 +42,7 @@
 
 .dark {
   --color-bg: #0f0f1a;
+  --color-surface: #141427;
   --color-surface-dark: #0f0f1a;
   --color-text-primary: #f9fafb;
   --color-text-secondary: #9ca3af;

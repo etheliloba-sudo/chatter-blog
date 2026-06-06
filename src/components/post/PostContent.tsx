@@ -1,4 +1,3 @@
-import React from 'react';
 import { renderMarkdown } from '../../lib/utils';
 interface PostContentProps {
   content: string;

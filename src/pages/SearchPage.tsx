@@ -1,9 +1,43 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Search } from 'lucide-react';
-import { Input } from '../components/ui/Input';
 import { PostCard } from '../components/post/PostCard';
+import type { Post } from '../types';
+import { searchPosts } from '../lib/content';
+
 export function SearchPage() {
   const [query, setQuery] = useState('');
+  const [results, setResults] = useState<Post[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (!trimmed) {
+      setResults([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    const timeoutId = window.setTimeout(async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const data = await searchPosts(trimmed, 20);
+        setResults(data);
+      } catch {
+        setError('Search is temporarily unavailable.');
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [query]);
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="text-center space-y-4 py-8">
@@ -27,9 +61,20 @@ export function SearchPage() {
       {query ?
       <div className="space-y-6">
           <h2 className="text-xl font-bold">Results for "{query}"</h2>
-          <div className="text-gray-500 py-12 text-center">
-            Mock search results would appear here.
-          </div>
+
+          {loading && <div className="text-gray-500 py-12 text-center">Searching...</div>}
+          {!loading && error && <div className="text-red-500 py-12 text-center">{error}</div>}
+          {!loading && !error && results.length === 0 && (
+            <div className="text-gray-500 py-12 text-center">No posts found for this query.</div>
+          )}
+
+          {!loading && !error && results.length > 0 && (
+            <div className="space-y-6">
+              {results.map((post) => (
+                <PostCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
         </div> :
 
       <div className="grid md:grid-cols-2 gap-8">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { Badge } from '../components/ui/Badge'
@@ -55,7 +55,7 @@ export function ProfileStoriesPage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-8">
         <Link
-          to={`/${username}`}
+          to={`/@${username}`}
           className="text-sm text-brand-600 dark:text-brand-400 hover:underline mb-4 inline-block"
         >
           ← Back to Profile
@@ -116,7 +116,7 @@ export function ProfileStoriesPage() {
                   <Link
                     to={
                       story.status === 'published'
-                        ? `/${username}/${story.id}`
+                        ? `/@${username}/${story.id}`
                         : `/edit/${story.id}`
                     }
                   >

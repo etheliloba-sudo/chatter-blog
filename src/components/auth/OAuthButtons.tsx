@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { GitHubLogoIcon } from '@radix-ui/react-icons';
 import { Button } from '../ui/Button';
+import { useAuth } from '../../context/AuthContext';
+
 export function OAuthButtons() {
+  const { signInWithOAuth } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
   const handleOAuth = async (provider: string) => {
     setLoading(provider);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setLoading(null);
+    setError(null);
+
+    try {
+      await signInWithOAuth(provider as 'google' | 'github');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'OAuth sign in failed';
+      setError(message);
+      setLoading(null);
+    }
   };
+
   return (
-    <div className="flex flex-col gap-3 w-full">
+    <div className="flex w-full flex-col gap-3">
       <Button
         variant="outline"
         className="w-full relative"
@@ -49,6 +62,12 @@ export function OAuthButtons() {
         {!loading && <GitHubLogoIcon className="absolute left-4 h-5 w-5" />}
         Continue with GitHub
       </Button>
+
+      {error && (
+        <p className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-500/40 dark:bg-red-500/10 dark:text-red-300">
+          {error}
+        </p>
+      )}
     </div>);
 
 }
