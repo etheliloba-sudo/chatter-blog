@@ -65,7 +65,7 @@ export function BookmarksPage() {
         <button
           key={tag}
           onClick={() => setFilter(tag)}
-          className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${filter === tag ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'}`}>
+          className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${filter === tag ? 'bg-brand-600 text-white' : 'bg-[var(--color-surface)] text-[var(--color-text-secondary)] hover:bg-brand-50 dark:hover:bg-brand-900/30'}`}>
           
               {tag === 'all' ? 'All Bookmarks' : tag}
             </button>
@@ -75,28 +75,28 @@ export function BookmarksPage() {
 
       <div className="space-y-6">
         {loading ?
-        <div className="text-center py-16 bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-2xl">
-            <p className="text-gray-500">Loading bookmarks...</p>
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] py-16 text-center">
+            <p className="text-[var(--color-text-secondary)]">Loading bookmarks...</p>
           </div> :
         error ?
         <div className="text-center py-16 bg-red-50 dark:bg-red-500/10 border border-red-300 dark:border-red-500/40 rounded-2xl">
             <p className="text-red-700 dark:text-red-300">{error}</p>
           </div> :
         !user ?
-        <div className="text-center py-16 bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-2xl">
-            <p className="text-gray-500 mb-4">Sign in to view your bookmarks.</p>
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] py-16 text-center">
+            <p className="mb-4 text-[var(--color-text-secondary)]">Sign in to view your bookmarks.</p>
             <Link to="/login" className="text-brand-600 dark:text-brand-400 font-medium hover:underline">
               Go to Sign In
             </Link>
           </div> :
         displayedPosts.length === 0 ?
-        <div className="text-center py-16 bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-2xl">
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] py-16 text-center">
             <Bookmark className="h-12 w-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
             <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
               No bookmarks found
             </h3>
 
-            <p className="text-gray-500">
+            <p className="text-[var(--color-text-secondary)]">
               {filter === 'all' ?
             "You haven't saved any stories yet." :
             `No bookmarks found for "${filter}".`}

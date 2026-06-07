@@ -26,11 +26,11 @@ function CommentItem({
       <div className="flex-1 space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm">
-            <span className="font-medium text-gray-900 dark:text-white">
+            <span className="font-medium text-[var(--color-text-primary)]">
               {comment.author.display_name}
             </span>
-            <span className="text-gray-500">·</span>
-            <span className="text-gray-500">
+            <span className="text-[var(--color-text-secondary)]">·</span>
+            <span className="text-[var(--color-text-secondary)]">
               {new Date(comment.created_at).toLocaleDateString(undefined, {
                 month: 'short',
                 day: 'numeric'
@@ -41,18 +41,18 @@ function CommentItem({
             <MoreHorizontal className="h-4 w-4" />
           </button>
         </div>
-        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+        <p className="text-sm leading-relaxed text-[var(--color-text-secondary)]">
           {comment.content}
         </p>
         <div className="flex items-center gap-4 pt-1">
           <button
             onClick={() => setLiked(!liked)}
-            className={`flex items-center gap-1.5 text-xs font-medium ${liked ? 'text-red-500' : 'text-gray-500 hover:text-gray-900 dark:hover:text-gray-300'}`}>
+            className={`flex items-center gap-1.5 text-xs font-medium ${liked ? 'text-red-500' : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
             
             <Heart className={`h-3.5 w-3.5 ${liked ? 'fill-current' : ''}`} />
             {comment.like_count + (liked ? 1 : 0)}
           </button>
-          <button className="flex items-center gap-1.5 text-xs font-medium text-gray-500 hover:text-gray-900 dark:hover:text-gray-300">
+          <button className="flex items-center gap-1.5 text-xs font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]">
             <MessageCircle className="h-3.5 w-3.5" />
             Reply
           </button>
@@ -123,7 +123,7 @@ export function CommentList({ postId }: { postId: string }) {
       className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800"
       id="comments">
       
-      <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">
+      <h3 className="mb-8 text-2xl font-bold text-[var(--color-text-primary)]">
         Responses (
         {comments.length +
         comments.reduce((acc: number, comment: PostComment) => acc + (comment.replies?.length || 0), 0)}
@@ -139,7 +139,7 @@ export function CommentList({ postId }: { postId: string }) {
       {user ?
       <form
         onSubmit={handleSubmit}
-        className="mb-10 bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-xl p-4 shadow-sm">
+        className="mb-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4 shadow-sm">
         
           <div className="flex gap-4">
             <Avatar
@@ -152,7 +152,7 @@ export function CommentList({ postId }: { postId: string }) {
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
               placeholder="What are your thoughts?"
-              className="w-full bg-transparent resize-none outline-none text-gray-900 dark:text-white placeholder-gray-500 min-h-[80px]" />
+              className="min-h-[80px] w-full resize-none bg-transparent text-[var(--color-text-primary)] outline-none placeholder:text-[var(--color-text-secondary)]" />
             
               <div className="flex justify-end">
                 <Button type="submit" size="sm" isLoading={submitting} disabled={!newComment.trim()}>
@@ -163,8 +163,8 @@ export function CommentList({ postId }: { postId: string }) {
           </div>
         </form> :
 
-      <div className="mb-10 p-6 bg-gray-50 dark:bg-surface-card-dark rounded-xl text-center">
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+      <div className="mb-10 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-center">
+          <p className="mb-4 text-[var(--color-text-secondary)]">
             Sign in to join the conversation.
           </p>
           <Link to="/login">

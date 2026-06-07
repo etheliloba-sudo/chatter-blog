@@ -61,7 +61,7 @@ export function ProfileStoriesPage() {
           ← Back to Profile
         </Link>
         <div className="flex items-center justify-between">
-          <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-white">
+          <h1 className="text-4xl font-serif font-bold text-[var(--color-text-primary)]">
             {isOwnProfile ? 'Your Stories' : `Stories by @${username}`}
           </h1>
           {isOwnProfile && (
@@ -76,22 +76,22 @@ export function ProfileStoriesPage() {
       </div>
 
       {isOwnProfile && (
-        <div className="flex gap-4 mb-8 border-b border-gray-200 dark:border-gray-800">
+        <div className="mb-8 flex gap-4 border-b border-[var(--color-border)]">
           <button
             onClick={() => setFilter('all')}
-            className={`pb-4 -mb-px text-sm font-medium border-b-2 transition-colors ${filter === 'all' ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+            className={`-mb-px border-b-2 pb-4 text-sm font-medium transition-colors ${filter === 'all' ? 'border-[var(--color-text-primary)] text-[var(--color-text-primary)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
           >
             All
           </button>
           <button
             onClick={() => setFilter('published')}
-            className={`pb-4 -mb-px text-sm font-medium border-b-2 transition-colors ${filter === 'published' ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+            className={`-mb-px border-b-2 pb-4 text-sm font-medium transition-colors ${filter === 'published' ? 'border-[var(--color-text-primary)] text-[var(--color-text-primary)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
           >
             Published
           </button>
           <button
             onClick={() => setFilter('drafts')}
-            className={`pb-4 -mb-px text-sm font-medium border-b-2 transition-colors ${filter === 'drafts' ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white' : 'border-transparent text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}
+            className={`-mb-px border-b-2 pb-4 text-sm font-medium transition-colors ${filter === 'drafts' ? 'border-[var(--color-text-primary)] text-[var(--color-text-primary)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}
           >
             Drafts
           </button>
@@ -100,8 +100,8 @@ export function ProfileStoriesPage() {
 
       <div className="space-y-6">
         {displayedStories.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 dark:bg-[var(--color-surface-card-dark)] rounded-xl border border-gray-200 dark:border-gray-800">
-            <p className="text-gray-500 dark:text-gray-400">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] py-12 text-center">
+            <p className="text-[var(--color-text-secondary)]">
               No stories found.
             </p>
           </div>
@@ -109,10 +109,10 @@ export function ProfileStoriesPage() {
           displayedStories.map((story) => (
             <div
               key={story.id}
-              className="bg-white dark:bg-[var(--color-surface-card-dark)] border border-gray-200 dark:border-gray-800 rounded-xl p-6 hover:shadow-md transition-shadow"
+              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 transition-shadow hover:shadow-md"
             >
               <div className="flex items-start justify-between gap-4 mb-2">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white group-hover:text-brand-600">
+                <h2 className="text-xl font-bold text-[var(--color-text-primary)] group-hover:text-brand-600">
                   <Link
                     to={
                       story.status === 'published'

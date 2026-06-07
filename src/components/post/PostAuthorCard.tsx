@@ -11,7 +11,7 @@ export function PostAuthorCard({ author }: PostAuthorCardProps) {
 
   return (
     <div className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
-      <div className="bg-gray-50 dark:bg-surface-card-dark rounded-2xl p-6 sm:p-8">
+      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 sm:p-8">
         <div className="flex flex-col sm:flex-row gap-6 items-start">
           <Link to={`/@${author.username}`} className="shrink-0">
             <Avatar
@@ -24,12 +24,12 @@ export function PostAuthorCard({ author }: PostAuthorCardProps) {
           <div className="flex-1 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                <h3 className="text-xl font-bold text-[var(--color-text-primary)]">
                   <Link to={`/@${author.username}`} className="hover:underline">
                     Written by {author.display_name}
                   </Link>
                 </h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-sm text-[var(--color-text-secondary)]">
                   {followerCount.toLocaleString()} followers
                 </p>
               </div>
@@ -45,7 +45,7 @@ export function PostAuthorCard({ author }: PostAuthorCardProps) {
                 />
               </div>
             </div>
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-[var(--color-text-secondary)]">
               {author.bio || 'Software engineer and writer.'}
             </p>
             <Link

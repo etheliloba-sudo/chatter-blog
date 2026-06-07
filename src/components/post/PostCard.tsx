@@ -10,7 +10,7 @@ interface PostCardProps {
 }
 export function PostCard({ post, showAuthor = true }: PostCardProps) {
   return (
-    <article className="group flex flex-col gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-surface-card-dark">
+    <article className="group flex flex-col gap-4 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5 shadow-sm transition-all hover:shadow-md">
       {showAuthor && post.author &&
       <div className="flex items-center gap-3">
           <Link to={`/@${post.author.username}`}>
@@ -27,7 +27,7 @@ export function PostCard({ post, showAuthor = true }: PostCardProps) {
             
               {post.author.display_name}
             </Link>
-            <span className="text-xs text-gray-500 dark:text-gray-400">
+            <span className="text-xs text-[var(--color-text-secondary)]">
               {post.published_at ? formatDate(post.published_at) : 'Draft'}
             </span>
           </div>
@@ -40,16 +40,16 @@ export function PostCard({ post, showAuthor = true }: PostCardProps) {
             to={`/@${post.author?.username || 'user'}/${post.slug}`}
             className="block group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors">
             
-            <h2 className="font-serif text-xl font-bold leading-tight text-gray-900 dark:text-white mb-2">
+            <h2 className="mb-2 font-serif text-xl font-bold leading-tight text-[var(--color-text-primary)]">
               {post.title}
             </h2>
-            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
+            <p className="line-clamp-2 text-sm text-[var(--color-text-secondary)]">
               {post.excerpt}
             </p>
           </Link>
 
           <div className="flex flex-wrap items-center gap-4 pt-2">
-            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)]">
               <span>{post.reading_time_minutes} min read</span>
               <span>·</span>
               <div className="flex gap-2">
@@ -65,7 +65,7 @@ export function PostCard({ post, showAuthor = true }: PostCardProps) {
               </div>
             </div>
 
-            <div className="ml-auto flex items-center gap-4 text-gray-400">
+            <div className="ml-auto flex items-center gap-4 text-[var(--color-text-secondary)]">
               <button className="flex items-center gap-1 hover:text-brand-600 transition-colors">
                 <Heart className="h-4 w-4" />
                 <span className="text-xs">{post.like_count}</span>

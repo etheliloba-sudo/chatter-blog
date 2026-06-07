@@ -46,11 +46,11 @@ export function TagDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white dark:bg-surface-card-dark border border-gray-200 dark:border-gray-800 rounded-2xl p-8 mb-12 text-center flex flex-col items-center">
+      <div className="mb-12 flex flex-col items-center rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-8 text-center">
         <div className="w-16 h-16 rounded-2xl bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center text-brand-600 dark:text-brand-400 mb-6">
           <Hash className="h-8 w-8" />
         </div>
-        <h1 className="text-4xl font-serif font-bold text-gray-900 dark:text-white mb-4">
+        <h1 className="mb-4 text-4xl font-serif font-bold text-[var(--color-text-primary)]">
           {tagName}
         </h1>
         <p className="text-gray-600 dark:text-gray-400 max-w-2xl mb-8">
@@ -59,14 +59,14 @@ export function TagDetailPage() {
         </p>
         <div className="flex items-center gap-6 mb-8 text-sm text-gray-500">
           <div className="flex flex-col">
-            <span className="font-bold text-gray-900 dark:text-white text-lg">
+            <span className="text-lg font-bold text-[var(--color-text-primary)]">
               {tagDetails?.post_count ?? posts.length}
             </span>
             <span>Stories</span>
           </div>
           <div className="w-px h-8 bg-gray-200 dark:bg-gray-800" />
           <div className="flex flex-col">
-            <span className="font-bold text-gray-900 dark:text-white text-lg">
+            <span className="text-lg font-bold text-[var(--color-text-primary)]">
               --
             </span>
             <span>Followers</span>
@@ -88,13 +88,13 @@ export function TagDetailPage() {
           <div className="flex gap-4 text-sm">
             <button
               onClick={() => setActiveTab('latest')}
-              className={`font-medium pb-4 -mb-[17px] border-b-2 transition-colors ${activeTab === 'latest' ? 'text-gray-900 dark:text-white border-gray-900 dark:border-white' : 'text-gray-500 border-transparent hover:text-gray-900 dark:hover:text-white'}`}>
+              className={`-mb-[17px] border-b-2 pb-4 font-medium transition-colors ${activeTab === 'latest' ? 'border-[var(--color-text-primary)] text-[var(--color-text-primary)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
               
               Latest
             </button>
             <button
               onClick={() => setActiveTab('top')}
-              className={`font-medium pb-4 -mb-[17px] border-b-2 transition-colors ${activeTab === 'top' ? 'text-gray-900 dark:text-white border-gray-900 dark:border-white' : 'text-gray-500 border-transparent hover:text-gray-900 dark:hover:text-white'}`}>
+              className={`-mb-[17px] border-b-2 pb-4 font-medium transition-colors ${activeTab === 'top' ? 'border-[var(--color-text-primary)] text-[var(--color-text-primary)]' : 'border-transparent text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'}`}>
               
               Top
             </button>

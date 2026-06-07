@@ -31,23 +31,23 @@
 }
 
 :root {
-  --color-bg: #ffffff;
+  --color-bg: #f5f6fb;
   --color-surface: #ffffff;
   --color-surface-light: #ffffff;
   --color-text-primary: #111827;
-  --color-text-secondary: #4b5563;
-  --color-border: #e5e7eb;
+  --color-text-secondary: #5b6477;
+  --color-border: #d8deea;
   --color-surface-card-light: #f9f8ff
 }
 
 .dark {
-  --color-bg: #0f0f1a;
-  --color-surface: #141427;
-  --color-surface-dark: #0f0f1a;
+  --color-bg: #090b16;
+  --color-surface: #141a2b;
+  --color-surface-dark: #090b16;
   --color-text-primary: #f9fafb;
-  --color-text-secondary: #9ca3af;
-  --color-border: #1f2937;
-  --color-surface-card-dark: #1a1a2e;
+  --color-text-secondary: #a8b0c3;
+  --color-border: #2a3246;
+  --color-surface-card-dark: #141a2b;
 }
 
 @layer base {

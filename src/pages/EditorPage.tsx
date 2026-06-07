@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Save,
@@ -43,9 +43,9 @@ export function EditorPage() {
   return (
     <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8">
       <div className="flex-1 space-y-6">
-        <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 pb-4">
+        <div className="flex items-center justify-between border-b border-[var(--color-border)] pb-4">
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-[var(--color-text-secondary)]">
               {saveStatus === 'saving' &&
               <span className="flex items-center gap-1">
                   <Save className="h-4 w-4 animate-pulse" /> Saving...
@@ -63,8 +63,8 @@ export function EditorPage() {
               }
               {saveStatus === 'idle' && 'Draft'}
             </span>
-            <span className="text-sm text-gray-400">·</span>
-            <span className="text-sm text-gray-500">
+            <span className="text-sm text-[var(--color-text-secondary)]">·</span>
+            <span className="text-sm text-[var(--color-text-secondary)]">
               ~{calculateReadingTime(content)} min read
             </span>
           </div>
@@ -84,11 +84,10 @@ export function EditorPage() {
           placeholder="Post Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="w-full bg-transparent text-4xl font-serif font-bold text-gray-900 dark:text-white placeholder:text-gray-300 dark:placeholder:text-gray-700 focus:outline-none" />
+          className="w-full bg-transparent text-4xl font-serif font-bold text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:outline-none" />
         
-
-        <div className="min-h-[500px] border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden flex flex-col bg-white dark:bg-surface-card-dark">
-          <div className="bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-2 flex gap-2">
+        <div className="flex min-h-[500px] flex-col overflow-hidden rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]">
+          <div className="flex gap-2 border-b border-[var(--color-border)] bg-[var(--color-bg)] p-2">
             <Button variant="ghost" size="sm" className="h-8 px-2">
               B
             </Button>
@@ -98,7 +97,7 @@ export function EditorPage() {
             <Button variant="ghost" size="sm" className="h-8 px-2">
               Link
             </Button>
-            <div className="w-px bg-gray-300 dark:bg-gray-700 mx-1" />
+            <div className="mx-1 w-px bg-[var(--color-border)]" />
             <Button variant="ghost" size="sm" className="h-8 px-2">
               H2
             </Button>
@@ -110,7 +109,7 @@ export function EditorPage() {
             placeholder="Write your story here... (Markdown supported)"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            className="flex-1 w-full p-4 bg-transparent resize-none focus:outline-none text-gray-800 dark:text-gray-200 font-mono text-sm leading-relaxed" />
+            className="flex-1 w-full resize-none bg-transparent p-4 font-mono text-sm leading-relaxed text-[var(--color-text-primary)] focus:outline-none" />
           
         </div>
       </div>
@@ -125,16 +124,16 @@ export function EditorPage() {
           </Button>
         </div>
 
-        <div className="bg-white dark:bg-surface-card-dark border border-gray-100 dark:border-gray-800 rounded-xl p-5 space-y-6">
-          <div className="flex items-center gap-2 font-medium border-b border-gray-100 dark:border-gray-800 pb-3">
+        <div className="space-y-6 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
+          <div className="flex items-center gap-2 border-b border-[var(--color-border)] pb-3 font-medium text-[var(--color-text-primary)]">
             <Settings className="h-4 w-4" /> Post Settings
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Cover Image</label>
-            <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-lg p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+            <label className="text-sm font-medium text-[var(--color-text-primary)]">Cover Image</label>
+            <div className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-[var(--color-border)] p-6 text-center transition-colors hover:bg-[var(--color-bg)]">
               <ImageIcon className="h-8 w-8 text-gray-400 mb-2" />
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-sm text-[var(--color-text-secondary)]">
                 Click or drag to upload
               </span>
             </div>
@@ -147,13 +146,13 @@ export function EditorPage() {
               onChange={(e) => setSlug(e.target.value)}
               className="font-mono text-sm" />
             
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-[var(--color-text-secondary)]">
               chatter.app/@username/{slug || '...'}
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Tags (up to 5)</label>
+            <label className="text-sm font-medium text-[var(--color-text-primary)]">Tags (up to 5)</label>
             <Input placeholder="Search tags..." />
             <div className="flex flex-wrap gap-2 pt-2">
               <span className="inline-flex items-center gap-1 rounded-full bg-brand-100 px-2 py-1 text-xs text-brand-800 dark:bg-brand-900/40 dark:text-brand-300">
@@ -163,9 +162,9 @@ export function EditorPage() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Excerpt</label>
+            <label className="text-sm font-medium text-[var(--color-text-primary)]">Excerpt</label>
             <textarea
-              className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent dark:border-gray-700 dark:bg-surface-dark dark:text-gray-100 resize-none h-24"
+              className="h-24 w-full resize-none rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2 text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-secondary)] focus:border-transparent focus:outline-none focus:ring-2 focus:ring-primary"
               placeholder="Brief summary for previews..." />
             
           </div>
