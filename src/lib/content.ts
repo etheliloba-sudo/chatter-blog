@@ -56,18 +56,21 @@ async function attachTagCounts(tags: Tag[]): Promise<Tag[]> {
     return [];
   }
 
-  const tagIds = tags.map((tag) => tag.id);
   const { data, error } = await supabase
     .from('post_tags')
-    .select('tag_id')
-    .in('tag_id', tagIds);
+    .select('tag_id');
 
   if (error) {
     throw error;
   }
 
+  const targetTagIds = new Set(tags.map((tag) => tag.id));
   const counts = new Map<string, number>();
   for (const row of data ?? []) {
+    if (!targetTagIds.has(row.tag_id)) {
+      continue;
+    }
+
     const current = counts.get(row.tag_id) ?? 0;
     counts.set(row.tag_id, current + 1);
   }
