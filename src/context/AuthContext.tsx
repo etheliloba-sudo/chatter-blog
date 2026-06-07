@@ -20,6 +20,16 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+function getAppOrigin(): string {
+  const configuredUrl = import.meta.env.VITE_APP_URL?.trim();
+
+  if (configuredUrl) {
+    return configuredUrl.replace(/\/$/, '');
+  }
+
+  return window.location.origin;
+}
+
 function toAppUser(authUser: { id: string; email?: string | null }): User {
   return {
     id: authUser.id,
@@ -122,7 +132,7 @@ export function AuthProvider({ children }: {children: React.ReactNode;}) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${window.location.origin}/`
+        redirectTo: `${getAppOrigin()}/`
       }
     });
 
@@ -133,7 +143,7 @@ export function AuthProvider({ children }: {children: React.ReactNode;}) {
 
   const resetPassword = async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`
+      redirectTo: `${getAppOrigin()}/reset-password`
     });
 
     if (error) {
