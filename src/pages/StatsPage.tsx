@@ -1,4 +1,3 @@
-import React from 'react';
 import { BarChart3, TrendingUp, Users, FileText, Heart } from 'lucide-react';
 export function StatsPage() {
   const topPosts = [
