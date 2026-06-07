@@ -38,7 +38,7 @@ export function EditorPage() {
   }, [title, content]);
   const handlePublish = () => {
     alert('Post published!');
-    navigate('/@demouser');
+    navigate('/');
   };
   return (
     <div className="max-w-5xl mx-auto flex flex-col lg:flex-row gap-8">
