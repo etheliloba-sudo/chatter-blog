@@ -1,4 +1,4 @@
-import type { Post, Profile, Tag } from '../types';
+import type { Post, PostComment, Profile, Tag } from '../types';
 import { supabase } from './supabase';
 
 type TagRow = {
@@ -305,6 +305,234 @@ export async function getPostsByAuthor(authorId: string): Promise<Post[]> {
   }
 
   return hydratePosts((data ?? []) as PostRow[]);
+}
+
+function isMissingColumnError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const maybeError = error as { code?: string; message?: string };
+  return (
+    maybeError.code === '42703' ||
+    Boolean(
+      maybeError.message &&
+        maybeError.message.toLowerCase().includes('does not exist')
+    )
+  );
+}
+
+function extractCommentContent(row: { content?: string; body?: string }): string {
+  return row.content ?? row.body ?? '';
+}
+
+export async function getPostInteractionState(postId: string, userId: string) {
+  const { data: likeData, error: likeError } = await supabase
+    .from('likes')
+    .select('post_id')
+    .eq('user_id', userId)
+    .eq('post_id', postId)
+    .maybeSingle();
+
+  if (likeError && !isMissingColumnError(likeError)) {
+    throw likeError;
+  }
+
+  const { data: bookmarkData, error: bookmarkError } = await supabase
+    .from('bookmarks')
+    .select('post_id')
+    .eq('user_id', userId)
+    .eq('post_id', postId)
+    .maybeSingle();
+
+  if (bookmarkError && !isMissingColumnError(bookmarkError)) {
+    throw bookmarkError;
+  }
+
+  return {
+    liked: Boolean(likeData),
+    bookmarked: Boolean(bookmarkData)
+  };
+}
+
+export async function togglePostLike(postId: string, userId: string, shouldLike: boolean) {
+  const query = shouldLike
+    ? supabase.from('likes').insert({ user_id: userId, post_id: postId })
+    : supabase.from('likes').delete().eq('user_id', userId).eq('post_id', postId);
+
+  const { error } = await query;
+  if (error && !isMissingColumnError(error)) {
+    throw error;
+  }
+}
+
+export async function togglePostBookmark(
+  postId: string,
+  userId: string,
+  shouldBookmark: boolean
+) {
+  const query = shouldBookmark
+    ? supabase.from('bookmarks').insert({ user_id: userId, post_id: postId })
+    : supabase.from('bookmarks').delete().eq('user_id', userId).eq('post_id', postId);
+
+  const { error } = await query;
+  if (error && !isMissingColumnError(error)) {
+    throw error;
+  }
+}
+
+export async function getFollowState(targetUserId: string, userId: string) {
+  const { data, error } = await supabase
+    .from('follows')
+    .select('following_id')
+    .eq('follower_id', userId)
+    .eq('following_id', targetUserId)
+    .maybeSingle();
+
+  if (error && !isMissingColumnError(error)) {
+    throw error;
+  }
+
+  return Boolean(data);
+}
+
+export async function toggleFollowUser(
+  targetUserId: string,
+  userId: string,
+  shouldFollow: boolean
+) {
+  const query = shouldFollow
+    ? supabase.from('follows').insert({ follower_id: userId, following_id: targetUserId })
+    : supabase.from('follows').delete().eq('follower_id', userId).eq('following_id', targetUserId);
+
+  const { error } = await query;
+  if (error && !isMissingColumnError(error)) {
+    throw error;
+  }
+}
+
+export async function getCommentsForPost(postId: string): Promise<PostComment[]> {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('id, post_id, author_id, parent_id, body, created_at, depth')
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    throw error;
+  }
+
+  const rows = (data ?? []) as Array<{
+    id: string;
+    post_id: string;
+    author_id: string;
+    parent_id: string | null;
+    body?: string;
+    created_at: string;
+  }>;
+
+  const authorIds = [...new Set(rows.map((row) => row.author_id))];
+  const profilesById = new Map<string, Profile>();
+
+  if (authorIds.length > 0) {
+    const { data: profiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', authorIds);
+
+    if (profilesError) {
+      throw profilesError;
+    }
+
+    for (const profile of profiles ?? []) {
+      profilesById.set(profile.id, profile as Profile);
+    }
+  }
+
+  return rows.map((row) => ({
+    id: row.id,
+    post_id: row.post_id,
+    author_id: row.author_id,
+    parent_id: row.parent_id,
+    content: extractCommentContent(row),
+    created_at: row.created_at,
+    like_count: 0,
+    author: {
+      username: profilesById.get(row.author_id)?.username ?? 'unknown',
+      display_name: profilesById.get(row.author_id)?.display_name ?? 'Unknown user',
+      avatar_url: profilesById.get(row.author_id)?.avatar_url ?? null
+    },
+    replies: []
+  })) as Awaited<ReturnType<typeof getCommentsForPost>>;
+}
+
+export async function createComment(params: {
+  postId: string;
+  authorId: string;
+  content: string;
+  parentId?: string | null;
+  profile: Profile;
+}) {
+  const { postId, authorId, content, parentId, profile } = params;
+  const { data, error } = await supabase
+    .from('comments')
+    .insert({
+      post_id: postId,
+      author_id: authorId,
+      parent_id: parentId ?? null,
+      body: content,
+      depth: parentId ? 1 : 0
+    })
+    .select('id, post_id, author_id, parent_id, body, created_at')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return {
+    id: data.id,
+    post_id: data.post_id,
+    author_id: data.author_id,
+    parent_id: data.parent_id,
+    content: extractCommentContent(data),
+    created_at: data.created_at,
+    like_count: 0,
+    author: {
+      username: profile.username,
+      display_name: profile.display_name,
+      avatar_url: profile.avatar_url
+    },
+    replies: []
+  };
+}
+
+export async function getBookmarkedPosts(userId: string): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from('bookmarks')
+    .select('post_id')
+    .eq('user_id', userId);
+
+  if (error) {
+    throw error;
+  }
+
+  const postIds = (data ?? []).map((row) => row.post_id);
+  if (postIds.length === 0) {
+    return [];
+  }
+
+  const { data: posts, error: postsError } = await supabase
+    .from('posts')
+    .select(POST_LIST_SELECT)
+    .in('id', postIds)
+    .eq('status', 'published');
+
+  if (postsError) {
+    throw postsError;
+  }
+
+  return hydratePosts((posts ?? []) as PostRow[]);
 }
 
 export async function getPostByUsernameAndSlug(

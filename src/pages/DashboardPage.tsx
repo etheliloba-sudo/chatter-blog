@@ -24,36 +24,77 @@ export function DashboardPage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [bookmarksLoading, setBookmarksLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const load = async () => {
+    let cancelled = false;
+
+    const loadPosts = async () => {
       if (!user) {
-        setPosts([]);
-        setBookmarkedPosts([]);
-        setLoading(false);
+        if (!cancelled) {
+          setPosts([]);
+          setLoading(false);
+        }
         return;
       }
 
-      setLoading(true);
-      setError(null);
+      if (!cancelled) {
+        setLoading(true);
+        setError(null);
+      }
 
       try {
-        const [authorPosts, bookmarks] = await Promise.all([
-          getPostsByAuthor(user.id),
-          getBookmarkedPosts(user.id)
-        ]);
-
-        setPosts(authorPosts);
-        setBookmarkedPosts(bookmarks);
+        const authorPosts = await getPostsByAuthor(user.id);
+        if (!cancelled) {
+          setPosts(authorPosts);
+        }
       } catch {
-        setError('Unable to load your dashboard right now.');
+        if (!cancelled) {
+          setError('Unable to load your dashboard right now.');
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
-    void load();
+    const loadBookmarks = async () => {
+      if (!user) {
+        if (!cancelled) {
+          setBookmarkedPosts([]);
+          setBookmarksLoading(false);
+        }
+        return;
+      }
+
+      if (!cancelled) {
+        setBookmarksLoading(true);
+      }
+
+      try {
+        const bookmarks = await getBookmarkedPosts(user.id);
+        if (!cancelled) {
+          setBookmarkedPosts(bookmarks);
+        }
+      } catch {
+        if (!cancelled) {
+          setBookmarkedPosts([]);
+        }
+      } finally {
+        if (!cancelled) {
+          setBookmarksLoading(false);
+        }
+      }
+    };
+
+    void loadPosts();
+    void loadBookmarks();
+
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const { drafts, published, totalViews, totalLikes, totalComments, topPosts } = useMemo(() => {
@@ -242,7 +283,11 @@ export function DashboardPage() {
         {!loading && !error && activeTab === 'bookmarks' &&
         <div className="space-y-6">
             <h1 className="text-3xl font-serif font-bold text-[var(--color-text-primary)]">Bookmarks</h1>
-            {bookmarkedPosts.length === 0 ?
+            {bookmarksLoading ?
+              <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-6 text-[var(--color-text-secondary)]">
+                Loading bookmarks...
+              </div> :
+            bookmarkedPosts.length === 0 ?
               <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] py-12 text-center text-[var(--color-text-secondary)]">
                 You have not bookmarked any stories yet.
               </div> :
