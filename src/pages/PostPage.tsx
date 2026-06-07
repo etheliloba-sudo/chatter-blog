@@ -41,16 +41,26 @@ export function PostPage() {
     const load = async () => {
       setLoading(true);
       setError(null);
+      setRelatedPosts([]);
 
       try {
         const postData = await getPostByUsernameAndSlug(username, slug);
         setPost(postData);
 
         if (postData?.tags?.[0]) {
-          const related = await getPostsByTagSlug(postData.tags[0].slug, 'latest');
-          setRelatedPosts(related.filter((item) => item.id !== postData.id).slice(0, 3));
-        } else {
-          setRelatedPosts([]);
+          void (async () => {
+            try {
+              const relatedTag = postData.tags?.[0];
+              if (!relatedTag) {
+                return;
+              }
+
+              const related = await getPostsByTagSlug(relatedTag.slug, 'latest');
+              setRelatedPosts(related.filter((item) => item.id !== postData.id).slice(0, 3));
+            } catch {
+              setRelatedPosts([]);
+            }
+          })();
         }
       } catch {
         setError('Unable to load this post right now.');
