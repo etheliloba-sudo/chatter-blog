@@ -14,7 +14,8 @@ import { getProfileByUsername, getPublishedPostsByAuthor } from '../lib/content'
 
 
 export function ProfilePage() {
-    const { username } = useParams();
+    const { username: rawUsername } = useParams();
+    const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
     const { profile: currentUser } = useAuth();
     const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
     const [isFollowing, setIsFollowing] = useState(false);

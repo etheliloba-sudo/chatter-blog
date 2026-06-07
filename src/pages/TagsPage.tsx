@@ -19,11 +19,20 @@ export function TagsPage() {
       setLoading(true);
       setError(null);
 
+      const fallbackTimer = window.setTimeout(() => {
+        setTags((current) => (current.length > 0 ? current : []));
+        setError((current) =>
+          current ?? 'Live tags are taking longer than expected. Please try again in a moment.'
+        );
+        setLoading(false);
+      }, 6000);
+
       try {
         setTags(await getTrendingTags(100));
       } catch {
         setError('Unable to load tags right now.');
       } finally {
+        window.clearTimeout(fallbackTimer);
         setLoading(false);
       }
     };

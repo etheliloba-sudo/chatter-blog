@@ -22,7 +22,8 @@ import {
 } from '../lib/engagement';
 
 export function PostPage() {
-  const { username, slug } = useParams();
+  const { username: rawUsername, slug } = useParams();
+  const username = rawUsername?.startsWith('@') ? rawUsername.slice(1) : rawUsername;
   const { user } = useAuth();
   const [liked, setLiked] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);

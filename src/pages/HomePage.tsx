@@ -19,20 +19,33 @@ export function HomePage() {
       setLoading(true);
       setError(null);
 
-      try {
-        const [postsData, tagsData] = await Promise.all([
-          getPublishedPosts(20),
-          getTrendingTags(12)
-        ]);
+      const fallbackTimer = window.setTimeout(() => {
+        setPosts((current) => (current.length > 0 ? current : mockPosts));
+        setTags((current) => (current.length > 0 ? current : mockTags.slice(0, 12)));
+        setError((current) =>
+          current ?? 'Live data is taking longer than expected.'
+        );
+        setLoading(false);
+      }, 6000);
 
+      try {
+        const postsData = await getPublishedPosts(20);
         setPosts(postsData);
-        setTags(tagsData);
       } catch {
-        setError('Unable to load live content. Showing sample data for now.');
+        setError('Unable to load live posts. Showing sample stories for now.');
         setPosts(mockPosts);
-        setTags(mockTags.slice(0, 12));
       } finally {
         setLoading(false);
+      }
+
+      try {
+        const tagsData = await getTrendingTags(12);
+        setTags(tagsData);
+      } catch {
+        setTags(mockTags.slice(0, 12));
+      } finally {
+        window.clearTimeout(fallbackTimer);
+        // Feed loading is controlled by the posts request only.
       }
     };
 

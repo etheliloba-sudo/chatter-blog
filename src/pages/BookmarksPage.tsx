@@ -4,7 +4,7 @@ import { Bookmark } from 'lucide-react';
 import { PostCard } from '../components/post/PostCard';
 import type { Post } from '../types';
 import { useAuth } from '../context/AuthContext';
-import { getBookmarkedPosts } from '../lib/engagement';
+import { getBookmarkedPosts, togglePostBookmark } from '../lib/engagement';
 import { useEffect } from 'react';
 
 export function BookmarksPage() {
@@ -12,6 +12,7 @@ export function BookmarksPage() {
   const [filter, setFilter] = useState('all');
   const [bookmarkedPosts, setBookmarkedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -36,6 +37,26 @@ export function BookmarksPage() {
 
     void load();
   }, [user]);
+
+  const handleRemoveBookmark = async (postId: string) => {
+    if (!user) {
+      return;
+    }
+
+    const previous = bookmarkedPosts;
+    setUpdatingId(postId);
+    setError(null);
+    setBookmarkedPosts((current) => current.filter((post) => post.id !== postId));
+
+    try {
+      await togglePostBookmark(postId, user.id, false);
+    } catch {
+      setBookmarkedPosts(previous);
+      setError('Unable to update bookmarks right now.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
   const tags = [
   'all',
@@ -107,6 +128,8 @@ export function BookmarksPage() {
         <div key={post.id} className="relative group">
               <PostCard post={post} />
               <button
+            onClick={() => void handleRemoveBookmark(post.id)}
+            disabled={updatingId === post.id}
             className="absolute top-4 right-4 p-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-500"
             title="Remove bookmark">
             

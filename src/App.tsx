@@ -35,11 +35,17 @@ export default function App() {
               <Route path="/tag/:tag" element={<TagDetailPage />} />
 
               <Route path="/@:username" element={<ProfilePage />} />
+              <Route path="/:username" element={<ProfilePage />} />
               <Route
                 path="/@:username/stories"
                 element={<ProfileStoriesPage />}
               />
+              <Route
+                path="/:username/stories"
+                element={<ProfileStoriesPage />}
+              />
               <Route path="/@:username/:slug" element={<PostPage />} />
+              <Route path="/:username/:slug" element={<PostPage />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<DashboardPage />} />

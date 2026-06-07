@@ -15,7 +15,7 @@ type PostRow = {
   title: string;
   slug: string;
   excerpt: string | null;
-  content: string;
+  content?: string | null;
   cover_image_url: string | null;
   status: 'draft' | 'published' | 'archived';
   reading_time_minutes: number;
@@ -28,9 +28,15 @@ type PostRow = {
   updated_at: string;
 };
 
+const POST_LIST_SELECT =
+  'id, author_id, title, slug, excerpt, cover_image_url, status, reading_time_minutes, view_count, like_count, comment_count, bookmark_count, published_at, created_at, updated_at';
+
+const POST_DETAIL_SELECT = `${POST_LIST_SELECT}, content`;
+
 function withDefaultPostValues(row: PostRow): Post {
   return {
     ...row,
+    content: row.content ?? '',
     reading_time_minutes: row.reading_time_minutes ?? 1,
     view_count: row.view_count ?? 0,
     like_count: row.like_count ?? 0,
@@ -106,14 +112,14 @@ async function hydratePosts(rows: PostRow[]): Promise<Post[]> {
 
   const tagsByPostId = new Map<string, Tag[]>();
   if (tagsResult.data) {
-    for (const row of tagsResult.data as Array<{ post_id: string; tags: TagRow[] | null }>) {
-      const firstTag = row.tags?.[0];
-      if (!firstTag) {
+    for (const row of tagsResult.data as Array<{ post_id: string; tags: TagRow | TagRow[] | null }>) {
+      const tagValue = Array.isArray(row.tags) ? row.tags[0] : row.tags;
+      if (!tagValue) {
         continue;
       }
 
       const current = tagsByPostId.get(row.post_id) ?? [];
-      current.push(normalizeTag(firstTag));
+      current.push(normalizeTag(tagValue));
       tagsByPostId.set(row.post_id, current);
     }
   }
@@ -131,7 +137,7 @@ async function hydratePosts(rows: PostRow[]): Promise<Post[]> {
 export async function getPublishedPosts(limit = 20): Promise<Post[]> {
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(POST_LIST_SELECT)
     .eq('status', 'published')
     .order('published_at', { ascending: false, nullsFirst: false })
     .limit(limit);
@@ -146,16 +152,16 @@ export async function getPublishedPosts(limit = 20): Promise<Post[]> {
 export async function getTrendingTags(limit = 12): Promise<Tag[]> {
   const { data, error } = await supabase
     .from('tags')
-    .select('id, name, slug, description')
+    .select('id, name, slug, description, post_count')
     .limit(Math.max(limit * 3, limit));
 
   if (error) {
     throw error;
   }
 
-  const tagsWithCounts = await attachTagCounts(
-    ((data ?? []) as TagRow[]).map(normalizeTag)
-  );
+  const initialTags = ((data ?? []) as TagRow[]).map(normalizeTag);
+  const hasStoredCounts = initialTags.some((tag) => tag.post_count > 0);
+  const tagsWithCounts = hasStoredCounts ? initialTags : await attachTagCounts(initialTags);
 
   return tagsWithCounts
     .sort((left, right) => {
@@ -171,7 +177,7 @@ export async function getTrendingTags(limit = 12): Promise<Tag[]> {
 export async function getTagBySlug(slug: string): Promise<Tag | null> {
   const { data, error } = await supabase
     .from('tags')
-    .select('id, name, slug, description')
+    .select('id, name, slug, description, post_count')
     .eq('slug', slug)
     .maybeSingle();
 
@@ -183,8 +189,13 @@ export async function getTagBySlug(slug: string): Promise<Tag | null> {
     return null;
   }
 
-  const [tag] = await attachTagCounts([normalizeTag(data as TagRow)]);
-  return tag ?? null;
+  const normalized = normalizeTag(data as TagRow);
+  if (normalized.post_count > 0) {
+    return normalized;
+  }
+
+  const [tag] = await attachTagCounts([normalized]);
+  return tag ?? normalized;
 }
 
 export async function getPostsByTagSlug(
@@ -212,7 +223,7 @@ export async function getPostsByTagSlug(
 
   let query = supabase
     .from('posts')
-    .select('*')
+    .select(POST_LIST_SELECT)
     .in('id', postIds)
     .eq('status', 'published')
     .limit(50);
@@ -240,7 +251,7 @@ export async function searchPosts(query: string, limit = 20): Promise<Post[]> {
 
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(POST_LIST_SELECT)
     .eq('status', 'published')
     .or(`title.ilike.%${normalized}%,excerpt.ilike.%${normalized}%,content.ilike.%${normalized}%`)
     .order('published_at', { ascending: false, nullsFirst: false })
@@ -270,10 +281,24 @@ export async function getProfileByUsername(username: string): Promise<Profile | 
 export async function getPublishedPostsByAuthor(authorId: string): Promise<Post[]> {
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(POST_LIST_SELECT)
     .eq('author_id', authorId)
     .eq('status', 'published')
     .order('published_at', { ascending: false, nullsFirst: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return hydratePosts((data ?? []) as PostRow[]);
+}
+
+export async function getPostsByAuthor(authorId: string): Promise<Post[]> {
+  const { data, error } = await supabase
+    .from('posts')
+    .select(POST_LIST_SELECT)
+    .eq('author_id', authorId)
+    .order('updated_at', { ascending: false });
 
   if (error) {
     throw error;
@@ -293,7 +318,7 @@ export async function getPostByUsernameAndSlug(
 
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(POST_DETAIL_SELECT)
     .eq('author_id', profile.id)
     .eq('slug', slug)
     .eq('status', 'published')

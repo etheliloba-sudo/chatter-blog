@@ -4,7 +4,10 @@ import { useAuth } from '../context/AuthContext'
 import { Badge } from '../components/ui/Badge'
 import { MessageCircle, Heart, Eye } from 'lucide-react'
 export function ProfileStoriesPage() {
-  const { username } = useParams()
+  const { username: rawUsername } = useParams()
+  const username = rawUsername?.startsWith('@')
+    ? rawUsername.slice(1)
+    : rawUsername
   const { profile: currentUser } = useAuth()
   const [filter, setFilter] = useState<'all' | 'published' | 'drafts'>('all')
   const isOwnProfile = currentUser?.username === username
