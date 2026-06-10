@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { generateSlug, calculateReadingTime } from "../lib/utils";
+import { calculateReadingTime } from "../lib/utils";
 import { createPost, getPostById, updatePost } from "../service/post";
 import { useAuth } from "../context/AuthContext"; 
 export function EditorPage() {
